@@ -9,7 +9,7 @@ const CYAN: &str = "\x1b[36m";
 const BOLD: &str = "\x1b[1m";
 const RESET: &str = "\x1b[0m";
 
-pub fn list_directory(path: &str, show_hidden: bool) {
+pub fn oneline(path: &str, show_hidden: bool) {
     let mut file_entries = fs::read_dir(path)
         .expect("Couldn't read directory.")
         .collect::<Vec<_>>();
@@ -38,7 +38,7 @@ pub fn list_directory(path: &str, show_hidden: bool) {
     println!("");
 }
 
-pub fn list_directory_tree(path: &str, show_hidden: bool, prefix: String, depth: u32, level: u32) {
+pub fn tree(path: &str, show_hidden: bool, prefix: String, depth: u32, level: u32) {
     if (level != 0) & (depth == level) {
         return;
     }
@@ -66,7 +66,7 @@ pub fn list_directory_tree(path: &str, show_hidden: bool, prefix: String, depth:
             println!("{}└── {}", prefix, name);
             if entry.path().is_dir() {
                 let prefix_new = prefix.clone() + "     ";
-                list_directory_tree(
+                tree(
                     entry.path().to_str().unwrap(),
                     show_hidden,
                     prefix_new,
@@ -78,7 +78,7 @@ pub fn list_directory_tree(path: &str, show_hidden: bool, prefix: String, depth:
             println!("{}├── {}", prefix, name);
             if entry.path().is_dir() {
                 let prefix_new = prefix.clone() + "|    ";
-                list_directory_tree(
+                tree(
                     entry.path().to_str().unwrap(),
                     show_hidden,
                     prefix_new,

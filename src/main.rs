@@ -2,7 +2,7 @@ extern crate clap;
 
 mod lib;
 use clap::{Arg, ArgAction, Command};
-use dls::{list_directory, list_directory_tree};
+use dls::{oneline, tree};
 
 fn main() {
     let matches = Command::new("dls")
@@ -22,9 +22,9 @@ fn main() {
                 .action(ArgAction::SetTrue),
         )
         .arg(
-            Arg::new("level")
-                .short('L')
-                .long("level")
+            Arg::new("depth")
+                .short('d')
+                .long("depth")
                 .value_name("DEPTH")
                 .help("Limit recursion depth in some display option")
                 .default_value("0")
@@ -51,12 +51,13 @@ fn main() {
     let path: String = matches.get_one::<String>("path").unwrap().to_string();
 
     let show_hidden = matches.get_flag("all");
-    let level: String = matches.get_one::<String>("level").unwrap().to_string();
-    let level: u32 = level.parse().unwrap();
+    let depth: String = matches.get_one::<String>("depth").unwrap().to_string();
+    let depth: u32 = depth.parse().unwrap();
 
     if matches.get_flag("tree") {
-        list_directory_tree(&path, show_hidden, String::from(""), 0, level);
+        println!("{}", &path);
+        tree(&path, show_hidden, String::from(""), 0, depth);
     } else if matches.get_flag("oneline") || !matches.get_flag("oneline") {
-        list_directory(&path, show_hidden);
+        oneline(&path, show_hidden);
     }
 }
