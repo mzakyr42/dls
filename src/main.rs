@@ -1,8 +1,7 @@
 extern crate clap;
 
-mod lib;
 use clap::{Arg, ArgAction, Command};
-use dls::{oneline, tree};
+use dls::{long, oneline, tree};
 
 fn main() {
     let matches = Command::new("dls")
@@ -35,7 +34,15 @@ fn main() {
                 .short('T')
                 .long("tree")
                 .help("List in tree format")
-                .conflicts_with("oneline")
+                .conflicts_with_all(["oneline", "long"])
+                .action(ArgAction::SetTrue),
+        )
+        .arg(
+            Arg::new("long")
+                .short('l')
+                .long("long")
+                .help("list in long format")
+                .conflicts_with_all(["oneline", "tree"])
                 .action(ArgAction::SetTrue),
         )
         .arg(
@@ -43,7 +50,7 @@ fn main() {
                 .short('1')
                 .long("oneline")
                 .help("List in oneline")
-                .conflicts_with("tree")
+                .conflicts_with_all(["tree", "long"])
                 .action(ArgAction::SetTrue),
         )
         .get_matches();
@@ -57,6 +64,8 @@ fn main() {
     if matches.get_flag("tree") {
         println!("{}", &path);
         tree(&path, show_hidden, String::from(""), 0, depth);
+    } else if matches.get_flag("long") {
+        long(&path, show_hidden);
     } else if matches.get_flag("oneline") || !matches.get_flag("oneline") {
         oneline(&path, show_hidden);
     }
